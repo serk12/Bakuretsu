@@ -1,0 +1,2 @@
+# Bakuretsu
+EXPLOSION
