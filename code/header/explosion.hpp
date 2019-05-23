@@ -19,6 +19,8 @@
 #include <iostream>
 
 #include "./interactions.hpp"
+#include "./cudaManager.h"
+
 #define TITLE_STRING "BAKURETSU"
 
 class Explosion {
@@ -26,7 +28,13 @@ class Explosion {
     void eventFunctions();
     void initGLUT(int *argc, char **argv);
     void initBuffer();
+    void render();
+    void draw();
 
+    GLuint vbo = 0;
+    struct cudaGraphicsResource *cuda_vbo_resource;
+    const unsigned int numCubes = 32;
+    float deltaTime             = 0;
   public:
     void start(int argc, char **argv);
     void display();
