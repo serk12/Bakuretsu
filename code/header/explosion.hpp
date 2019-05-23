@@ -33,7 +33,7 @@ class Explosion {
 
     GLuint vbo = 0;
     struct cudaGraphicsResource *cuda_vbo_resource;
-    const unsigned int numCubes = 32;
+    const unsigned int numCubes = 256 * 256;
     float deltaTime             = 0;
   public:
     void start(int argc, char **argv);
