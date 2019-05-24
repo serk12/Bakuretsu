@@ -72,6 +72,9 @@ void Explosion::start(int argc, char **argv) {
     Interactions::printInstructions();
     // OpenGL init
     initGLUT(&argc, argv);
+    // GLSL init
+    GLint program = LoadShader(GEOMETRY_SHADER_DIR, VERTEX_SHADER_DIR, FRAGMENT_SHADER_DIR);
+    glUseProgram(program);
     // events init
     eventFunctions();
     // display func

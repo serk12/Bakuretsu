@@ -20,6 +20,7 @@
 
 #include "./interactions.hpp"
 #include "./cudaManager.h"
+#include "./shader.hpp"
 
 #define TITLE_STRING "BAKURETSU"
 

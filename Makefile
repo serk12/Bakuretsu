@@ -12,19 +12,22 @@ NVCC_FLAGS = -g -G -Xcompiler "-Wall -Wno-deprecated-declarations" -Wno-deprecat
 
 all: ./build ./build/bakuretsu.exe
 
-./build/bakuretsu.exe: ./build/main.o ./build/explosion.o ./build/interactions.o ./build/cudaManager.o
+./build/bakuretsu.exe: ./build/main.o ./build/explosion.o ./build/interactions.o ./build/cudaManager.o ./build/shader.o
 	$(NVCC) $^ -o $@ $(LDFLAGS)
 
 ./build/main.o: ./code/main.cpp ./code/header/explosion.hpp
 	$(NVCC) $(NVCC_FLAGS) -c $< -o $@
 
-./build/explosion.o: ./code/src/explosion.cpp ./code/header/explosion.hpp ./code/header/interactions.hpp ./code/header/cudaManager.h
+./build/explosion.o: ./code/src/explosion.cpp ./code/header/explosion.hpp ./code/header/interactions.hpp ./code/header/cudaManager.h ./code/header/shader.hpp
 	$(NVCC) $(NVCC_FLAGS) -c $< -o $@
 
 ./build/interactions.o: ./code/src/interactions.cpp ./code/header/interactions.hpp
 		$(NVCC) $(NVCC_FLAGS) -c $< -o $@
 
 ./build/cudaManager.o: ./code/src/cudaManager.cu ./code/header/cudaManager.h
+	$(NVCC) $(NVCC_FLAGS) -c $< -o $@
+
+./build/shader.o: ./code/src/shader.cpp ./code/header/shader.hpp
 	$(NVCC) $(NVCC_FLAGS) -c $< -o $@
 
 ./build:
