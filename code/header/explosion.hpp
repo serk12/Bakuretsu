@@ -25,20 +25,20 @@
 
 class Explosion {
   private:
-    void eventFunctions();
-    void initGLUT(int *argc, char **argv);
-    void initBuffer();
-    void render();
-    void draw();
+    static void eventFunctions();
+    static void initGLUT(int *argc, char **argv);
+    static void initBuffer();
+    static void display();
+    static void render();
+    static void draw();
 
-    GLuint vbo = 0;
-    struct cudaGraphicsResource *cuda_vbo_resource;
-    const unsigned int numCubes = 256 * 256;
-    float deltaTime             = 0;
+    static const unsigned int numCubes;
+
+    static GLuint vbo;
+    static struct cudaGraphicsResource *cuda_vbo_resource;
+    static float deltaTime;
   public:
-    void start(int argc, char **argv);
-    void display();
-    Explosion();
+    static void start(int argc, char **argv);
 };
 
 #endif // ifndef EXPLOSION_HH
