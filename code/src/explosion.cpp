@@ -47,7 +47,7 @@ void Explosion::render() {
     cudaGraphicsResourceGetMappedPointer((void **)&ptr, &num_bytes, cuda_vbo_resource);
     if (!setInitValues) {
         vertexKernelLauncher(ptr, numCubesX, numCubesY, numCubesZ, cubeSize);
-        setPosition = true;
+        setInitValues = true;
     }
 
     cudaGraphicsUnmapResources(1, &cuda_vbo_resource, 0);
@@ -81,7 +81,7 @@ void Explosion::start(int argc, char **argv) {
     // OpenGL init
     initGLUT(&argc, argv);
     // GLSL init
-    GLint program = LoadShader(GEOMETRY_SHADER_DIR, VERTEX_SHADER_DIR, FRAGMENT_SHADER_DIR);
+    GLuint program = LoadShader(GEOMETRY_SHADER_DIR, VERTEX_SHADER_DIR, FRAGMENT_SHADER_DIR);
     glUseProgram(program);
     // events init
     eventFunctions();
