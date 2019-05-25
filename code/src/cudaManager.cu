@@ -1,28 +1,25 @@
 #include "../header/cudaManager.h"
 
-__global__ void simple_vbo_kernel(float4 *pos, unsigned int width, unsigned int height, float time)
+__global__ void simple_vbo_kernel(float4 *pos, unsigned int numCubesX, unsigned int numCubesY, unsigned int numCubesZ, float cubeSize)
 {
+    // calculate index
     unsigned int x = blockIdx.x * blockDim.x + threadIdx.x;
     unsigned int y = blockIdx.y * blockDim.y + threadIdx.y;
+    unsigned int z = blockIdx.z * blockDim.z + threadIdx.z;
 
     // calculate uv coordinates
-    float u = x / (float)width;
-    float v = y / (float)height;
-    u = u * 2.0f - 1.0f;
-    v = v * 2.0f - 1.0f;
-
-    // calculate simple sine wave pattern
-    float freq = 4.0f;
-    float w    = sinf(u * freq + time) * cosf(v * freq + time) * 0.5f;
+    float offSet = (float)(1.0 / 2.0 * cubeSize);
+    float u      = ((x / (float)numCubesX) * cubeSize - offSet);
+    float w      = ((y / (float)numCubesY) * cubeSize - offSet);
+    float v      = ((z / (float)numCubesZ) * cubeSize - offSet);
 
     // write output vertex
-    pos[y * width + x] = make_float4(u, w, v, 1.0f);
+    pos[x + numCubesY * (y + numCubesZ * z)] = make_float4(u, w, v, 1.0f);
 }
 
 
-void vertexKernelLauncher(float4 *pos, unsigned int numCubes, float deltaTime) {
-    unsigned int d = int(sqrt(numCubes));
-    dim3 block(8, 8, 1);
-    dim3 grid(d / block.x, d / block.y, 1);
-    simple_vbo_kernel << < grid, block >> > (pos, d, d, deltaTime);
+void vertexKernelLauncher(float4 *pos, unsigned int numCubesX, unsigned int numCubesY, unsigned int numCubesZ, float cubeSize) {
+    dim3 block(8, 8, 8);
+    dim3 grid(numCubesX / block.x, numCubesY / block.y, numCubesZ / block.z);
+    simple_vbo_kernel << < grid, block >> > (pos, numCubesX, numCubesY, numCubesZ, cubeSize);
 }

@@ -1,8 +1,15 @@
 #include "../header/explosion.hpp"
 
-const unsigned int Explosion::numCubes = 256 * 256;
-GLuint Explosion::vbo                  = 0;
-float  Explosion::deltaTime            = 0;
+const unsigned int Explosion::numCubesX = 8;
+const unsigned int Explosion::numCubesY = 8;
+const unsigned int Explosion::numCubesZ = 8;
+const unsigned int Explosion::numCubes  = numCubesX * numCubesY * numCubesZ;
+
+const float Explosion::cubeSize = 1.7f;
+
+GLuint Explosion::vbo           = 0;
+float  Explosion::deltaTime     = 0;
+bool   Explosion::setInitValues = false;
 struct cudaGraphicsResource *Explosion::cuda_vbo_resource;
 
 void Explosion::eventFunctions() {
@@ -38,8 +45,10 @@ void Explosion::render() {
     cudaGraphicsMapResources(1, &cuda_vbo_resource, 0);
     size_t num_bytes;
     cudaGraphicsResourceGetMappedPointer((void **)&ptr, &num_bytes, cuda_vbo_resource);
-
-    vertexKernelLauncher(ptr, numCubes, deltaTime);
+    if (!setInitValues) {
+        vertexKernelLauncher(ptr, numCubesX, numCubesY, numCubesZ, cubeSize);
+        setPosition = true;
+    }
 
     cudaGraphicsUnmapResources(1, &cuda_vbo_resource, 0);
 }
@@ -56,7 +65,6 @@ void Explosion::draw() {
     glVertexPointer(4, GL_FLOAT, 0, 0);
 
     glEnableClientState(GL_VERTEX_ARRAY);
-    glColor3f(1.0, 0.0, 0.0);
     glDrawArrays(GL_POINTS, 0, numCubes);
     glDisableClientState(GL_VERTEX_ARRAY);
 }
