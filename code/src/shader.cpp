@@ -54,7 +54,8 @@ bool  perspectiva = false;
 void calcEsfera(glm::vec3 mins, glm::vec3 maxs) {
     if (mins.x == maxs.x and mins.y == maxs.y and mins.z == maxs.z) {
         float minx, miny, minz, maxx, maxy, maxz;
-        maxz = maxy = maxx = 8 * 1.7f / 2.0f;
+        maxz = maxy = maxx = 8 * 1.7f / 2.0f; // alert hardcoded numCubesX and
+                                              // cubeSize
         minz = miny = minx = -maxz;
         float zs = (maxz - minz) / 2.0f;
         float ys = (maxy - miny) / 2.0f;
