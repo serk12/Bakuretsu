@@ -29,18 +29,19 @@ class Explosion {
     static void eventFunctions();
     static void initGLUT(int *argc, char **argv);
     static void initBuffer();
-    static void display();
     static void render();
     static void draw();
 
     static const unsigned int numCubes, numCubesX, numCubesY, numCubesZ;
     static const float cubeSize;
 
+  public:
+    // temporal fix
+    static void display();
     static GLuint vbo;
     static struct cudaGraphicsResource *cuda_vbo_resource;
     static float deltaTime;
     static bool  setInitValues;
-  public:
     static void start(int argc, char **argv);
 };
 

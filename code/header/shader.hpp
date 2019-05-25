@@ -14,6 +14,14 @@
 #define GEOMETRY_SHADER_DIR "./code/shaders/cube.geom"
 #define VERTEX_SHADER_DIR "./code/shaders/default.vert"
 
+extern float zoom, scale, angleY, angleZ, angleX, ra;
+extern bool  perspectiva;
+extern int   rotate;
+
 GLuint LoadShader(const char *geometryShader, const char *vertexShader, const char *fragmentShader);
 void loadUniforms(GLuint program);
+void projecTransform();
+void modelTransform();
+void viewTransform();
+
 #endif // ifndef SHADER_H
