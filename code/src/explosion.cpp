@@ -5,7 +5,7 @@ const unsigned int Explosion::numCubesY = 8;
 const unsigned int Explosion::numCubesZ = 8;
 const unsigned int Explosion::numCubes  = numCubesX * numCubesY * numCubesZ;
 
-const float Explosion::cubeSize = 1.7f;
+const float Explosion::cubeSize = 12.0f;
 
 GLuint Explosion::vbo           = 0;
 float  Explosion::deltaTime     = 0;
