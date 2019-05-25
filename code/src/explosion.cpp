@@ -83,6 +83,7 @@ void Explosion::start(int argc, char **argv) {
     // GLSL init
     GLuint program = LoadShader(GEOMETRY_SHADER_DIR, VERTEX_SHADER_DIR, FRAGMENT_SHADER_DIR);
     glUseProgram(program);
+    loadUniforms(program);
     // events init
     eventFunctions();
     // display func
