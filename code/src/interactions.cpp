@@ -83,9 +83,13 @@ void Interactions::animation() {
 }
 
 void Interactions::exitfunc() {
-    if (Explosion::vbo) {
-        cudaGraphicsUnregisterResource(Explosion::cuda_vbo_resource);
-        glDeleteBuffers(1, &Explosion::vbo);
+    if (Explosion::vbo_vel) {
+        cudaGraphicsUnregisterResource(Explosion::cuda_vbo_vel_resource);
+        glDeleteBuffers(1, &Explosion::vbo_vel);
+    }
+    if (Explosion::vbo_pos) {
+        cudaGraphicsUnregisterResource(Explosion::cuda_vbo_pos_resource);
+        glDeleteBuffers(1, &Explosion::vbo_pos);
     }
 }
 

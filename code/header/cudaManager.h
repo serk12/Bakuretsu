@@ -2,6 +2,6 @@
 #define CUDAMANAGER_H
 
 struct float4;
-void vertexKernelLauncher(float4 *pos, unsigned int numCubesX, unsigned int numCubesY, unsigned int numCubesZ, float deltaTime);
-
+void initCubesDataKernal(float4 *ptr_pos, float4 *ptr_vel, unsigned int numCubesX, unsigned int numCubesY, unsigned int numCubesZ, float cubeSize);
+void cubesUpdate(float4 *ptr_pos, float4 *ptr_vel, unsigned int numCubes);
 #endif // ifndef CUDAMANAGER_H
