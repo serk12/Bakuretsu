@@ -1,8 +1,8 @@
 #include "../header/explosion.hpp"
 
-const unsigned int Explosion::numCubesX = 128;
-const unsigned int Explosion::numCubesY = 128;
-const unsigned int Explosion::numCubesZ = 128;
+const unsigned int Explosion::numCubesX = 8;
+const unsigned int Explosion::numCubesY = 8;
+const unsigned int Explosion::numCubesZ = 8;
 const unsigned int Explosion::numCubes  = numCubesX * numCubesY * numCubesZ;
 
 const float   Explosion::cubeSize = numCubesY + 0.3f;
