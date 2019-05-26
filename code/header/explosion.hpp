@@ -34,7 +34,7 @@ class Explosion {
 
     static const unsigned int numCubes, numCubesX, numCubesY, numCubesZ;
     static const float cubeSize;
-
+    static const GLfloat cubeRad;
   public:
     // temporal fix
     static void display();

@@ -5,7 +5,8 @@ const unsigned int Explosion::numCubesY = 8;
 const unsigned int Explosion::numCubesZ = 8;
 const unsigned int Explosion::numCubes  = numCubesX * numCubesY * numCubesZ;
 
-const float Explosion::cubeSize = 12.0f;
+const float   Explosion::cubeSize = 8.3f;
+const GLfloat Explosion::cubeRad  = 1.0f;
 
 GLuint Explosion::vbo           = 0;
 float  Explosion::deltaTime     = 0;
@@ -83,7 +84,7 @@ void Explosion::start(int argc, char **argv) {
     // GLSL init
     GLuint program = LoadShader(GEOMETRY_SHADER_DIR, VERTEX_SHADER_DIR, FRAGMENT_SHADER_DIR);
     glUseProgram(program);
-    loadUniforms(program);
+    loadUniforms(program, cubeRad);
     // events init
     eventFunctions();
     // display func

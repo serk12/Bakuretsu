@@ -43,7 +43,7 @@ GLuint procesShaderFile(const char *shaderPath, GLenum shaderType) {
 }
 
 glm::vec3 centerEsfer, up;
-GLuint    transLoc, projLoc, viewLoc;
+GLuint    transLoc, projLoc, viewLoc, radLoc;
 float     ra = float(600 / float(600)), radi;
 
 float zoom        = 1.0f, scale = 1.0f;
@@ -100,16 +100,18 @@ void projecTransform() {
     glUniformMatrix4fv(projLoc, 1, GL_FALSE, &Proj[0][0]);
 }
 
-void loadUniforms(GLuint program) {
+void loadUniforms(GLuint program, GLfloat cubeRad) {
     transLoc = glGetUniformLocation(program, "TG");
     projLoc  = glGetUniformLocation(program, "proj");
     viewLoc  = glGetUniformLocation(program, "view");
+    radLoc   = glGetUniformLocation(program, "r");
 
     calcEsfera(glm::vec3(0, 0, 0), glm::vec3(0, 0, 0));
     up =  glm::vec3(0, 1, 0);
     projecTransform();
     viewTransform();
     modelTransform();
+    glUniform1f(radLoc, cubeRad);
 }
 
 

@@ -19,7 +19,7 @@ extern bool  perspectiva;
 extern int   rotate;
 
 GLuint LoadShader(const char *geometryShader, const char *vertexShader, const char *fragmentShader);
-void loadUniforms(GLuint program);
+void loadUniforms(GLuint program, GLfloat cubeRad);
 void projecTransform();
 void modelTransform();
 void viewTransform();
