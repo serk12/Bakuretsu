@@ -55,12 +55,9 @@ void Explosion::render() {
 }
 
 void Explosion::draw() {
-    glMatrixMode(GL_MODELVIEW);
     glEnable(GL_DEPTH_TEST);
     glDepthMask(GL_TRUE);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glLoadIdentity();
-    glTranslatef(0.0, 0.0, 0.0);
 
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
     glVertexPointer(4, GL_FLOAT, 0, 0);

@@ -9,26 +9,32 @@ void Interactions::keyboard(unsigned char key, int x, int y) {
     if (key == 'o') {
         perspectiva = !perspectiva;
         projecTransform();
+        updateViewProjectMatrix();
     }
     if (key == 's') {
         scale += 0.05;
         modelTransform();
+        updateViewProjectMatrix();
     }
     if (key == 'd') {
         scale -= 0.05;
         modelTransform();
+        updateViewProjectMatrix();
     }
     if (key == 'r') {
         ++rotate;
         modelTransform();
+        updateViewProjectMatrix();
     }
     if (key == 'z') {
         zoom /= 1.1f;
         projecTransform();
+        updateViewProjectMatrix();
     }
     if (key == 'x') {
         zoom *= 1.1f;
         projecTransform();
+        updateViewProjectMatrix();
     }
     if (key == 'l') DoingInteractive = ROTATEX;
     else if (key == 'k') DoingInteractive = ROTATEY;
@@ -44,14 +50,17 @@ void Interactions::mouseMove(int x, int y) {
     if (DoingInteractive == ROTATEX) {
         angleX += (x - xClick) * M_PI / 180.0;
         viewTransform();
+        updateViewProjectMatrix();
     }
     else if (DoingInteractive == ROTATEY) {
         angleY += (x - xClick) * M_PI / 180.0;
         viewTransform();
+        updateViewProjectMatrix();
     }
     else if (DoingInteractive == ROTATEZ) {
         angleZ += (x - xClick) * M_PI / 180.0;
         viewTransform();
+        updateViewProjectMatrix();
     }
     DoingInteractive = NONE;
 
@@ -64,6 +73,7 @@ void Interactions::mouseMove(int x, int y) {
 void Interactions::reshape(int w, int h) {
     ra = float(w / float(h));
     projecTransform();
+    updateViewProjectMatrix();
     glViewport(0, 0, w, h);
 }
 

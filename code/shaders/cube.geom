@@ -3,9 +3,7 @@
 layout(points) in;
 layout(triangle_strip, max_vertices = 14) out;
 
-uniform mat4 TG;
-uniform mat4 proj;
-uniform mat4 view;
+uniform mat4 transViewProectionMatrix;
 uniform float r;
 
 out vec4 fColor;
@@ -26,51 +24,51 @@ void build_cube(vec4 position)
     vec4 p7 = p3 + dz;
     vec4 p8 = p4 + dz;
 
-    gl_Position = proj * view * TG * p7;
+    gl_Position = transViewProectionMatrix * p7;
     fColor = vec4(1.0, 0.0, 0.0, 0.0);
     EmitVertex();
 
-    gl_Position =proj * view * TG * p8;
+    gl_Position = transViewProectionMatrix * p8;
     EmitVertex();
 
-    gl_Position = proj * view * TG *p5;
+    gl_Position = transViewProectionMatrix * p5;
     EmitVertex();
 
-    gl_Position = proj * view * TG *p6;
+    gl_Position = transViewProectionMatrix * p6;
     fColor = vec4(0.0, 1.0, 0.0, 0.0);
     EmitVertex();
 
-    gl_Position = proj * view * TG *p2;
+    gl_Position = transViewProectionMatrix * p2;
     EmitVertex();
 
-    gl_Position = proj * view * TG *p8;
+    gl_Position = transViewProectionMatrix * p8;
     EmitVertex();
 
-    gl_Position = proj * view * TG * p4;
+    gl_Position = transViewProectionMatrix * p4;
     fColor = vec4(0.0, 0.0, 1.0, 0.0);
     EmitVertex();
 
-    gl_Position = proj * view * TG * p7;
+    gl_Position = transViewProectionMatrix * p7;
     EmitVertex();
 
-    gl_Position = proj * view * TG * p3;
+    gl_Position = transViewProectionMatrix * p3;
     EmitVertex();
 
-    gl_Position = proj * view * TG * p5;
+    gl_Position = transViewProectionMatrix * p5;
     fColor = vec4(0.0, 1.0, 1.0, 0.0);
     EmitVertex();
 
-    gl_Position = proj * view * TG * p1;
+    gl_Position = transViewProectionMatrix * p1;
     EmitVertex();
 
-    gl_Position = proj * view * TG * p2;
+    gl_Position = transViewProectionMatrix * p2;
     EmitVertex();
 
-    gl_Position = proj * view * TG * p3;
+    gl_Position = transViewProectionMatrix * p3;
     fColor = vec4(1.0, 0.0, 1.0, 0.0);
     EmitVertex();
 
-    gl_Position = proj * view * TG * p4;
+    gl_Position = transViewProectionMatrix * p4;
     EmitVertex();
 }
 

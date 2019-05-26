@@ -42,8 +42,9 @@ GLuint procesShaderFile(const char *shaderPath, GLenum shaderType) {
     return shader;
 }
 
+glm::mat4 transform, View, Proj;
 glm::vec3 centerEsfer, up;
-GLuint    transLoc, projLoc, viewLoc, radLoc;
+GLuint    transLoc, projLoc, viewLoc, transViewProjLoc, radLoc;
 float     ra = float(600 / float(600)), radi;
 
 float zoom        = 1.0f, scale = 1.0f;
@@ -77,40 +78,40 @@ void calcEsfera(glm::vec3 mins, glm::vec3 maxs) {
 }
 
 void modelTransform() {
-    glm::mat4 transform(1.0f);
+    transform = glm::mat4(1.0f);
     transform = glm::scale(transform, glm::vec3(scale));
     transform = glm::rotate(transform, (3.141516f / 4.0f) * rotate,
                             glm::vec3(0.0f, 1.0f, 0.0f));
-    glUniformMatrix4fv(transLoc, 1, GL_FALSE, &transform[0][0]);
 }
 
 void viewTransform() {
-    glm::mat4 View = glm::lookAt(centerEsfer + (radi * glm::vec3(0, 0, 1)),
-                                 centerEsfer, up);
+    View = glm::lookAt(centerEsfer + (radi * glm::vec3(0, 0, 1)),
+                       centerEsfer, up);
     View = glm::rotate(View, -angleY, glm::vec3(0, 1, 0));
     View = glm::rotate(View, -angleZ, glm::vec3(0, 0, 1));
     View = glm::rotate(View, -angleX, glm::vec3(1, 0, 0));
-    glUniformMatrix4fv(viewLoc, 1, GL_FALSE, &View[0][0]);
 }
 
 void projecTransform() {
-    glm::mat4 Proj;
     if (perspectiva) Proj = glm::perspective(((float)3.141516f / 2.0f) * zoom, ra, 0.01f, 20.0f);
     else Proj = glm::ortho(-radi * ra, radi * ra, -radi, radi, 0.01f, 20.0f);
-    glUniformMatrix4fv(projLoc, 1, GL_FALSE, &Proj[0][0]);
+}
+
+void updateViewProjectMatrix() {
+    glm::mat4 transViewProj = Proj * View * transform;
+    glUniformMatrix4fv(transViewProjLoc, 1, GL_FALSE, &transViewProj[0][0]);
 }
 
 void loadUniforms(GLuint program, GLfloat cubeRad) {
-    transLoc = glGetUniformLocation(program, "TG");
-    projLoc  = glGetUniformLocation(program, "proj");
-    viewLoc  = glGetUniformLocation(program, "view");
-    radLoc   = glGetUniformLocation(program, "r");
-
     calcEsfera(glm::vec3(0, 0, 0), glm::vec3(0, 0, 0));
     up =  glm::vec3(0, 1, 0);
     projecTransform();
     viewTransform();
     modelTransform();
+
+    transViewProjLoc = glGetUniformLocation(program, "transViewProectionMatrix");
+    radLoc           = glGetUniformLocation(program, "r");
+    updateViewProjectMatrix();
     glUniform1f(radLoc, cubeRad);
 }
 
