@@ -3,6 +3,7 @@
 Interactions::InteractiveAction Interactions::DoingInteractive = NONE;
 int Interactions::xClick                                       = 0;
 int Interactions::yClick                                       = 0;
+int Interactions::oldTime                                      = 0;
 
 void Interactions::keyboard(unsigned char key, int x, int y) {
     if (key == 27) exit(0);
@@ -78,7 +79,9 @@ void Interactions::reshape(int w, int h) {
 }
 
 void Interactions::animation() {
-    Explosion::deltaTime += 0.01;
+    int newTime = glutGet(GLUT_ELAPSED_TIME);
+    Explosion::deltaTime = (newTime - oldTime) / 1000.0f;
+    oldTime              = newTime;
     Explosion::display();
 }
 

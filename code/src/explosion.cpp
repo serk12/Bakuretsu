@@ -1,8 +1,8 @@
 #include "../header/explosion.hpp"
 
-const unsigned int Explosion::numCubesX = 8;
-const unsigned int Explosion::numCubesY = 8;
-const unsigned int Explosion::numCubesZ = 8;
+const unsigned int Explosion::numCubesX = 128;
+const unsigned int Explosion::numCubesY = 128;
+const unsigned int Explosion::numCubesZ = 128;
 const unsigned int Explosion::numCubes  = numCubesX * numCubesY * numCubesZ;
 
 const float   Explosion::cubeSize = numCubesY + 0.3f;
@@ -61,7 +61,7 @@ void Explosion::render() {
         setInitValues = true;
     }
     else {
-        cubesUpdate(ptr_pos, ptr_vel, numCubes);
+        cubesUpdate(ptr_pos, ptr_vel, numCubesX, numCubesY, numCubesZ, deltaTime);
     }
 
     cudaGraphicsUnmapResources(1, &cuda_vbo_pos_resource, 0);

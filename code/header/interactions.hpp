@@ -12,7 +12,8 @@ class Interactions {
   private:
     typedef enum { NONE, ROTATEY, ROTATEX, ROTATEZ } InteractiveAction;
     static InteractiveAction DoingInteractive;
-    static int xClick, yClick;
+    static int xClick, yClick, oldTime;
+
   public:
     static void keyboard(unsigned char key, int x, int y);
     static void handleSpecialKeypress(int key, int x, int y);
