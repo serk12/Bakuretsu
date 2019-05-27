@@ -70,7 +70,7 @@ void Explosion::render() {
         setInitValues = true;
     }
     else {
-        cubesUpdate(ptr_pos, ptr_vel, numCubesX, numCubesY, numCubesZ, deltaTime);
+        cubesUpdate(ptr_pos, ptr_vel, numCubesX, numCubesY, numCubesZ, float(bigCubeRad), deltaTime);
     }
 
     cudaGraphicsUnmapResources(1, &cuda_vbo_pos_resource, 0);
