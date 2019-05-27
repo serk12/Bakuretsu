@@ -32,8 +32,6 @@ class Explosion {
     static void render();
     static void draw();
 
-    static const unsigned int numCubes, numCubesX, numCubesY, numCubesZ;
-    static const float   cubeSize;
     static const GLfloat cubeRad, bigCubeRad;
     static float vertices[4];
     static bool  setInitValues;

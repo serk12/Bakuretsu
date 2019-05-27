@@ -1,6 +1,12 @@
 #include "../header/cudaManager.h"
 
-__global__ void calculate_vel_and_pos(float4 *pos, float4 *vel, unsigned int numCubesX, unsigned int numCubesY, unsigned int numCubesZ, float cubeSize) {
+const unsigned int numCubesX = 8;
+const unsigned int numCubesY = 8;
+const unsigned int numCubesZ = 8;
+const unsigned int numCubes  = numCubesX * numCubesY * numCubesZ;
+const float cubeSize         = numCubesY + 0.3f;
+
+__global__ void calculate_vel_and_pos(float4 *pos, float4 *vel) {
     // calculate index
     unsigned int x = blockIdx.x * blockDim.x + threadIdx.x;
     unsigned int y = blockIdx.y * blockDim.y + threadIdx.y;
@@ -23,15 +29,15 @@ __global__ void calculate_vel_and_pos(float4 *pos, float4 *vel, unsigned int num
 }
 
 
-void initCubesDataKernal(float4 *ptr_pos, float4 *ptr_vel, unsigned int numCubesX, unsigned int numCubesY, unsigned int numCubesZ, float cubeSize) {
+void initCubesDataKernal(float4 *ptr_pos, float4 *ptr_vel) {
     dim3 block(8, 8, 8);
     dim3 grid(numCubesX / block.x, numCubesY / block.y, numCubesZ / block.z);
-    calculate_vel_and_pos << < grid, block >> > (ptr_pos, ptr_vel, numCubesX, numCubesY, numCubesZ, cubeSize);
+    calculate_vel_and_pos << < grid, block >> > (ptr_pos, ptr_vel);
 }
 
 
 
-__global__ void calculate_update(float4 *pos, float4 *vel, float deltaTime, unsigned int numCubesY, unsigned int numCubesZ, float bigCubeRad) {
+__global__ void calculate_update(float4 *pos, float4 *vel, float deltaTime, float bigCubeRad) {
     unsigned int x = blockIdx.x * blockDim.x + threadIdx.x;
     unsigned int y = blockIdx.y * blockDim.y + threadIdx.y;
     unsigned int z = blockIdx.z * blockDim.z + threadIdx.z;
@@ -55,8 +61,8 @@ __global__ void calculate_update(float4 *pos, float4 *vel, float deltaTime, unsi
     pos[x + numCubesY * (y + numCubesZ * z)] = make_float4(u, w, v, 1.0f);
 }
 
-void cubesUpdate(float4 *ptr_pos, float4 *ptr_vel, unsigned int numCubesX, unsigned int numCubesY, unsigned int numCubesZ, float bigCubeRad, float deltaTime) {
+void cubesUpdate(float4 *ptr_pos, float4 *ptr_vel, float bigCubeRad, float deltaTime) {
     dim3 block(8, 8, 8);
     dim3 grid(numCubesX / block.x, numCubesY / block.y, numCubesZ / block.z);
-    calculate_update << < grid, block >> > (ptr_pos, ptr_vel, deltaTime, numCubesY, numCubesZ, bigCubeRad / 2.0f);
+    calculate_update << < grid, block >> > (ptr_pos, ptr_vel, deltaTime, bigCubeRad / 2.0f);
 }

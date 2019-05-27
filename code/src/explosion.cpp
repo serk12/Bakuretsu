@@ -1,11 +1,5 @@
 #include "../header/explosion.hpp"
 
-const unsigned int Explosion::numCubesX = 8;
-const unsigned int Explosion::numCubesY = 8;
-const unsigned int Explosion::numCubesZ = 8;
-const unsigned int Explosion::numCubes  = numCubesX * numCubesY * numCubesZ;
-
-const float   Explosion::cubeSize   = numCubesY + 0.3f;
 const GLfloat Explosion::cubeRad    = 1.0f;
 const GLfloat Explosion::bigCubeRad = (numCubesY / 8.0f) * 20.0f;
 
@@ -63,11 +57,11 @@ void Explosion::render() {
     cudaGraphicsResourceGetMappedPointer((void **)&ptr_vel, &num_bytes_vel, cuda_vbo_vel_resource);
 
     if (!setInitValues) {
-        initCubesDataKernal(ptr_pos, ptr_vel, numCubesX, numCubesY, numCubesZ, cubeSize);
+        initCubesDataKernal(ptr_pos, ptr_vel);
         setInitValues = true;
     }
     else {
-        cubesUpdate(ptr_pos, ptr_vel, numCubesX, numCubesY, numCubesZ, float(bigCubeRad), deltaTime);
+        cubesUpdate(ptr_pos, ptr_vel, float(bigCubeRad), deltaTime);
     }
 
     cudaGraphicsUnmapResources(1, &cuda_vbo_pos_resource, 0);
