@@ -9,7 +9,8 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include "GL/glew.h"
-
+#define W 1000
+#define H 1000
 #define FRAGMENT_SHADER_DIR "./code/shaders/default.frag"
 #define GEOMETRY_SHADER_DIR "./code/shaders/cube.geom"
 #define VERTEX_SHADER_DIR "./code/shaders/default.vert"
@@ -19,7 +20,8 @@ extern bool  perspectiva;
 extern int   rotate;
 
 GLuint LoadShader(const char *geometryShader, const char *vertexShader, const char *fragmentShader);
-void loadUniforms(GLuint program, GLfloat cubeRad);
+void loadUniforms(GLuint program, GLfloat cubeRad, GLfloat bigCubeRad);
+void setRadius(GLfloat rad);
 void updateViewProjectMatrix();
 void projecTransform();
 void modelTransform();

@@ -94,6 +94,9 @@ void Interactions::exitfunc() {
         cudaGraphicsUnregisterResource(Explosion::cuda_vbo_pos_resource);
         glDeleteBuffers(1, &Explosion::vbo_pos);
     }
+    if (Explosion::vbo_base_cube) {
+        glDeleteBuffers(1, &Explosion::vbo_base_cube);
+    }
 }
 
 void Interactions::printInstructions() {

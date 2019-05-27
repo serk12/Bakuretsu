@@ -5,13 +5,17 @@ const unsigned int Explosion::numCubesY = 8;
 const unsigned int Explosion::numCubesZ = 8;
 const unsigned int Explosion::numCubes  = numCubesX * numCubesY * numCubesZ;
 
-const float   Explosion::cubeSize = numCubesY + 0.3f;
-const GLfloat Explosion::cubeRad  = 1.0f;
+const float   Explosion::cubeSize   = numCubesY + 0.3f;
+const GLfloat Explosion::cubeRad    = 1.0f;
+const GLfloat Explosion::bigCubeRad = 20.0f;
 
 GLuint Explosion::vbo_pos       = 0;
+GLuint Explosion::vbo_base_cube = 0;
 GLuint Explosion::vbo_vel       = 0;
 float  Explosion::deltaTime     = 0;
-bool   Explosion::setInitValues = false;
+float  Explosion::vertices[4]   = { -bigCubeRad / 2.0f, -bigCubeRad / 2.0f, -bigCubeRad / 2.0f, 1.0f };
+
+bool Explosion::setInitValues = false;
 struct cudaGraphicsResource *Explosion::cuda_vbo_pos_resource, *Explosion::cuda_vbo_vel_resource;
 
 void Explosion::eventFunctions() {
@@ -27,8 +31,8 @@ void Explosion::eventFunctions() {
 void Explosion::initGLUT(int *argc, char **argv) {
     glutInit(argc, argv);
     glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE);
-    glutInitWindowPosition(100, 100);
-    glutInitWindowSize(600, 600);
+    glutInitWindowPosition(10, 10);
+    glutInitWindowSize(W, H);
     glutCreateWindow(TITLE_STRING);
     glewInit();
     glClearColor(0, 0, 0, 0);
@@ -46,6 +50,11 @@ void Explosion::initBuffer() {
     glBufferData(GL_ARRAY_BUFFER, numCubes * 4 * sizeof(float), 0, GL_DYNAMIC_DRAW);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     cudaGraphicsGLRegisterBuffer(&cuda_vbo_vel_resource, vbo_vel, cudaGraphicsMapFlagsWriteDiscard);
+
+    glGenBuffers(1, &vbo_base_cube);
+    glBindBuffer(GL_ARRAY_BUFFER, vbo_base_cube);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
 void Explosion::render() {
@@ -73,11 +82,18 @@ void Explosion::draw() {
     glDepthMask(GL_TRUE);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+    setRadius(cubeRad);
     glBindBuffer(GL_ARRAY_BUFFER, vbo_pos);
     glVertexPointer(4, GL_FLOAT, 0, 0);
-
     glEnableClientState(GL_VERTEX_ARRAY);
     glDrawArrays(GL_POINTS, 0, numCubes);
+    glDisableClientState(GL_VERTEX_ARRAY);
+
+    setRadius(bigCubeRad);
+    glBindBuffer(GL_ARRAY_BUFFER, vbo_base_cube);
+    glVertexPointer(4, GL_FLOAT, 0, 0);
+    glEnableClientState(GL_VERTEX_ARRAY);
+    glDrawArrays(GL_POINTS, 0, 1);
     glDisableClientState(GL_VERTEX_ARRAY);
 }
 
@@ -95,7 +111,7 @@ void Explosion::start(int argc, char **argv) {
     // GLSL init
     GLuint program = LoadShader(GEOMETRY_SHADER_DIR, VERTEX_SHADER_DIR, FRAGMENT_SHADER_DIR);
     glUseProgram(program);
-    loadUniforms(program, cubeRad);
+    loadUniforms(program, cubeRad, bigCubeRad);
     // events init
     eventFunctions();
     // display func

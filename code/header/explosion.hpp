@@ -34,12 +34,13 @@ class Explosion {
 
     static const unsigned int numCubes, numCubesX, numCubesY, numCubesZ;
     static const float   cubeSize;
-    static const GLfloat cubeRad;
-    static bool setInitValues;
+    static const GLfloat cubeRad, bigCubeRad;
+    static float vertices[4];
+    static bool  setInitValues;
   public:
     // temporal fix
     static struct cudaGraphicsResource *cuda_vbo_pos_resource, *cuda_vbo_vel_resource;
-    static GLuint vbo_pos, vbo_vel;
+    static GLuint vbo_pos, vbo_vel, vbo_base_cube;
     static float  deltaTime;
 
     static void start(int argc, char **argv);

@@ -44,20 +44,22 @@ GLuint procesShaderFile(const char *shaderPath, GLenum shaderType) {
 
 glm::mat4 transform, View, Proj;
 glm::vec3 centerEsfer, up;
-GLuint    transLoc, projLoc, viewLoc, transViewProjLoc, radLoc;
-float     ra = float(600 / float(600)), radi;
+GLuint    transViewProjLoc, radLoc;
+float     ra = float(W / float(H)), radi;
 
 float zoom        = 1.0f, scale = 1.0f;
 int   rotate      = 0;
 float angleY      = 0.0f, angleZ = 0.0f, angleX = 0.0f;
 bool  perspectiva = false;
+float maxCube;
 
-void calcEsfera(glm::vec3 mins, glm::vec3 maxs) {
+void calcEsfera(glm::vec3 mins, glm::vec3 maxs, GLfloat bigCubeRad) {
     if (mins.x == maxs.x and mins.y == maxs.y and mins.z == maxs.z) {
         float minx, miny, minz, maxx, maxy, maxz;
-        maxz = maxy = maxx = 8 * 1.7f / 2.0f; // alert hardcoded numCubesX and
-                                              // cubeSize
-        minz = miny = minx = -maxz;
+        maxCube = maxz = maxy = maxx =  bigCubeRad * 0.4f; // experimental
+                                                           // number
+
+        minz = miny = minx = -maxCube;
         float zs = (maxz - minz) / 2.0f;
         float ys = (maxy - miny) / 2.0f;
         float xs = (maxx - minx) / 2.0f;
@@ -93,8 +95,8 @@ void viewTransform() {
 }
 
 void projecTransform() {
-    if (perspectiva) Proj = glm::perspective(((float)3.141516f / 2.0f) * zoom, ra, 0.01f, 20.0f);
-    else Proj = glm::ortho(-radi * ra, radi * ra, -radi, radi, 0.01f, 20.0f);
+    if (perspectiva) Proj = glm::perspective(((float)3.141516f / 2.0f) * zoom, ra, 0.01f, maxCube * 3.0f);
+    else Proj = glm::ortho(-radi * ra, radi * ra, -radi, radi, 0.01f, maxCube * 3.0f);
 }
 
 void updateViewProjectMatrix() {
@@ -102,8 +104,12 @@ void updateViewProjectMatrix() {
     glUniformMatrix4fv(transViewProjLoc, 1, GL_FALSE, &transViewProj[0][0]);
 }
 
-void loadUniforms(GLuint program, GLfloat cubeRad) {
-    calcEsfera(glm::vec3(0, 0, 0), glm::vec3(0, 0, 0));
+void setRadius(GLfloat rad) {
+    glUniform1f(radLoc, rad);
+}
+
+void loadUniforms(GLuint program, GLfloat cubeRad, GLfloat bigCubeRad) {
+    calcEsfera(glm::vec3(0, 0, 0), glm::vec3(0, 0, 0), bigCubeRad);
     up =  glm::vec3(0, 1, 0);
     projecTransform();
     viewTransform();
@@ -112,7 +118,7 @@ void loadUniforms(GLuint program, GLfloat cubeRad) {
     transViewProjLoc = glGetUniformLocation(program, "transViewProectionMatrix");
     radLoc           = glGetUniformLocation(program, "r");
     updateViewProjectMatrix();
-    glUniform1f(radLoc, cubeRad);
+    setRadius(cubeRad);
 }
 
 
