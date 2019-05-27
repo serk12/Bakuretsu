@@ -7,7 +7,7 @@ const unsigned int Explosion::numCubes  = numCubesX * numCubesY * numCubesZ;
 
 const float   Explosion::cubeSize   = numCubesY + 0.3f;
 const GLfloat Explosion::cubeRad    = 1.0f;
-const GLfloat Explosion::bigCubeRad = 20.0f;
+const GLfloat Explosion::bigCubeRad = (numCubesY / 8.0f) * 20.0f;
 
 GLuint Explosion::vbo_pos       = 0;
 GLuint Explosion::vbo_base_cube = 0;
@@ -42,19 +42,16 @@ void Explosion::initBuffer() {
     glGenBuffers(1, &vbo_pos);
     glBindBuffer(GL_ARRAY_BUFFER, vbo_pos);
     glBufferData(GL_ARRAY_BUFFER, numCubes * 4 * sizeof(float), 0, GL_DYNAMIC_DRAW);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
     cudaGraphicsGLRegisterBuffer(&cuda_vbo_pos_resource, vbo_pos, cudaGraphicsMapFlagsWriteDiscard);
 
     glGenBuffers(1, &vbo_vel);
     glBindBuffer(GL_ARRAY_BUFFER, vbo_vel);
     glBufferData(GL_ARRAY_BUFFER, numCubes * 4 * sizeof(float), 0, GL_DYNAMIC_DRAW);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
     cudaGraphicsGLRegisterBuffer(&cuda_vbo_vel_resource, vbo_vel, cudaGraphicsMapFlagsWriteDiscard);
 
     glGenBuffers(1, &vbo_base_cube);
     glBindBuffer(GL_ARRAY_BUFFER, vbo_base_cube);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
 void Explosion::render() {

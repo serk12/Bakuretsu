@@ -95,7 +95,7 @@ void viewTransform() {
 }
 
 void projecTransform() {
-    if (perspectiva) Proj = glm::perspective(((float)3.141516f / 2.0f) * zoom, ra, 0.01f, maxCube * 3.0f);
+    if (perspectiva) Proj = glm::perspective(((float)3.141516f / 2.0f) * zoom, ra, 1.0f, maxCube * 3.0f);
     else Proj = glm::ortho(-radi * ra, radi * ra, -radi, radi, 0.01f, maxCube * 3.0f);
 }
 
