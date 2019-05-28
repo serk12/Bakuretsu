@@ -1,16 +1,16 @@
 #include "../header/cudaManager.h"
 
-const unsigned int numCubesX = 16;
-const unsigned int numCubesY = 16;
-const unsigned int numCubesZ = 16;
+const unsigned int numCubesX = 20;
+const unsigned int numCubesY = 20;
+const unsigned int numCubesZ = 20;
 const unsigned int numCubes  = numCubesX * numCubesY * numCubesZ;
 const float cubeSize         = 1.0f;
 const float cubeDistance     = cubeSize + 0.01f;
 // restitution
-const float e = 0.5;
+const float e = 0.50;
 // invMass=1/(densiti*vol)
 const float invMass = 1.0f / (0.6f * cubeSize * cubeSize * cubeSize);
-const float initVel = 0.70f;
+const float initVel = 1.70f;
 
 __global__ void calculate_vel_and_pos(float4 *pos, float4 *vel) {
     // calculate index
@@ -35,7 +35,7 @@ __global__ void calculate_vel_and_pos(float4 *pos, float4 *vel) {
 
 
 void initCubesDataKernal(float4 *ptr_pos, float4 *ptr_vel) {
-    dim3 block(8, 8, 8);
+    dim3 block(5, 5, 5);
     dim3 grid(numCubesX / block.x, numCubesY / block.y, numCubesZ / block.z);
     calculate_vel_and_pos << < grid, block >> > (ptr_pos, ptr_vel);
 }
@@ -102,8 +102,8 @@ void cubesUpdate(float4 *ptr_pos, float4 *ptr_vel, float bigCubeRad, float delta
     // unsigned int triangleNumberN = numCubes - 1;
     // diagonal + 1 / 2 = diag^2+diag / (2*diag) [+1 for ceiling]
     // unsigned int dimToScale = (triangleNumberN + 2) / 2;
-    dim3 block(8, 8);
+    dim3 block(32, 32);
     dim3 grid(numCubes / block.x, numCubes / block.y);
-    calculate_collision << < grid, block >> > (ptr_pos, ptr_vel, deltaTime);
-    calculate_update << < numCubes / block.x, block.x >> > (ptr_pos, ptr_vel, deltaTime, bigCubeRad / 2.0f);
+    calculate_collision << < grid, block  >> > (ptr_pos, ptr_vel, deltaTime);
+    calculate_update << < numCubes / 64, 64 >> > (ptr_pos, ptr_vel, deltaTime, bigCubeRad / 2.0f);
 }
