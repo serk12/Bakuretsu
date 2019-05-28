@@ -50,7 +50,7 @@ float     ra = float(W / float(H)), radi;
 float zoom        = 1.0f, scale = 1.0f;
 int   rotate      = 0;
 float angleY      = 0.0f, angleZ = 0.0f, angleX = 0.0f;
-bool  perspectiva = false;
+bool  perspectiva = true;
 float maxCube;
 
 void calcEsfera(glm::vec3 mins, glm::vec3 maxs, GLfloat bigCubeRad) {

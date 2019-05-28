@@ -1,15 +1,17 @@
 #include "../header/cudaManager.h"
 
-const unsigned int numCubesX = 2;
-const unsigned int numCubesY = 2;
-const unsigned int numCubesZ = 2;
+const unsigned int numCubesX = 16;
+const unsigned int numCubesY = 16;
+const unsigned int numCubesZ = 16;
 const unsigned int numCubes  = numCubesX * numCubesY * numCubesZ;
 const float cubeSize         = 1.0f;
 const float cubeDistance     = cubeSize + 0.01f;
 // restitution
-const float e = 0.1;
+const float e = 0.25;
 // invMass=1/(densiti*vol)
 const float invMass = 1.0f / (0.6f * cubeSize * cubeSize * cubeSize);
+const float initVel = 4.0f;
+
 __global__ void calculate_vel_and_pos(float4 *pos, float4 *vel) {
     // calculate index
     unsigned int x = blockIdx.x * blockDim.x + threadIdx.x;
@@ -24,17 +26,16 @@ __global__ void calculate_vel_and_pos(float4 *pos, float4 *vel) {
     // write output vertex
     unsigned int i = x + numCubesY * (y + numCubesZ * z);
     pos[i] = make_float4(u, w, v, 1.0f);
-    float lenght   = sqrt(u * u + w * w + v * v);
-    float totalVel = 1.1f;
-    float u_vel    = (u / lenght) * totalVel;
-    float w_vel    = (w / lenght) * totalVel;
-    float v_vel    = (v / lenght) * totalVel;
+    float lenght = sqrt(u * u + w * w + v * v);
+    float u_vel  = (u / lenght) * initVel;
+    float w_vel  = (w / lenght) * initVel;
+    float v_vel  = (v / lenght) * initVel;
     vel[i] = make_float4(u_vel, w_vel, v_vel, 1.0f);
 }
 
 
 void initCubesDataKernal(float4 *ptr_pos, float4 *ptr_vel) {
-    dim3 block(1, 1, 1);
+    dim3 block(8, 8, 8);
     dim3 grid(numCubesX / block.x, numCubesY / block.y, numCubesZ / block.z);
     calculate_vel_and_pos << < grid, block >> > (ptr_pos, ptr_vel);
 }
