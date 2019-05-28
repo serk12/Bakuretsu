@@ -7,10 +7,10 @@ const unsigned int numCubes  = numCubesX * numCubesY * numCubesZ;
 const float cubeSize         = 1.0f;
 const float cubeDistance     = cubeSize + 0.01f;
 // restitution
-const float e = 0.25;
+const float e = 0.5;
 // invMass=1/(densiti*vol)
 const float invMass = 1.0f / (0.6f * cubeSize * cubeSize * cubeSize);
-const float initVel = 4.0f;
+const float initVel = 0.70f;
 
 __global__ void calculate_vel_and_pos(float4 *pos, float4 *vel) {
     // calculate index
@@ -103,7 +103,7 @@ void cubesUpdate(float4 *ptr_pos, float4 *ptr_vel, float bigCubeRad, float delta
     // diagonal + 1 / 2 = diag^2+diag / (2*diag) [+1 for ceiling]
     // unsigned int dimToScale = (triangleNumberN + 2) / 2;
     dim3 block(8, 8);
-    dim3 grid(numCubes / 8, numCubes / 8);
+    dim3 grid(numCubes / block.x, numCubes / block.y);
     calculate_collision << < grid, block >> > (ptr_pos, ptr_vel, deltaTime);
-    calculate_update << < 8, numCubes / 8 >> > (ptr_pos, ptr_vel, deltaTime, bigCubeRad / 2.0f);
+    calculate_update << < numCubes / block.x, block.x >> > (ptr_pos, ptr_vel, deltaTime, bigCubeRad / 2.0f);
 }
