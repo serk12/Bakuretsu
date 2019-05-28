@@ -102,4 +102,17 @@ void Interactions::exitfunc() {
 void Interactions::printInstructions() {
     printf("camera interactions\n");
     printf("esc: close graphics window\n");
+    printf("i+mouse(x): rotate camara z axis\n");
+    printf("k+mouse(x): rotate camara y axis\n");
+    printf("l+mouse(x): rotate camara x axis\n");
+
+    printf("o: changes camera perspective\n");
+
+    printf("d: scale\n");
+    printf("s: descale\n");
+
+    printf("z: zoom in\n");
+    printf("x: zoom out\n");
+
+    printf("r: rotate x axis\n");
 }
