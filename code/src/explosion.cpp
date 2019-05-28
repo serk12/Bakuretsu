@@ -1,6 +1,6 @@
 #include "../header/explosion.hpp"
 
-const GLfloat Explosion::cubeRad    = 1.0f;
+const GLfloat Explosion::cubeRad    = cubeSize;
 const GLfloat Explosion::bigCubeRad = (numCubesY / 8.0f) * 20.0f;
 
 GLuint Explosion::vbo_pos       = 0;

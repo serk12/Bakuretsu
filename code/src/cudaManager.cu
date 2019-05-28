@@ -1,13 +1,15 @@
 #include "../header/cudaManager.h"
 
-const unsigned int numCubesX = 8;
-const unsigned int numCubesY = 8;
-const unsigned int numCubesZ = 8;
+const unsigned int numCubesX = 2;
+const unsigned int numCubesY = 2;
+const unsigned int numCubesZ = 2;
 const unsigned int numCubes  = numCubesX * numCubesY * numCubesZ;
-const float cubeSize         = (numCubesY > numCubesX ?
-                                (numCubesY > numCubesZ ? numCubesY : numCubesZ) :
-                                (numCubesX > numCubesZ ? numCubesX : numCubesZ)) + 0.1f;
-
+const float cubeSize         = 1.0f;
+const float cubeDistance     = cubeSize + 0.01f;
+// restitution
+const float e = 0.1;
+// invMass=1/(densiti*vol)
+const float invMass = 1.0f / (0.6f * cubeSize * cubeSize * cubeSize);
 __global__ void calculate_vel_and_pos(float4 *pos, float4 *vel) {
     // calculate index
     unsigned int x = blockIdx.x * blockDim.x + threadIdx.x;
@@ -15,10 +17,9 @@ __global__ void calculate_vel_and_pos(float4 *pos, float4 *vel) {
     unsigned int z = blockIdx.z * blockDim.z + threadIdx.z;
 
     // calculate uv coordinates
-    float offSet = (float)(1.0 / 2.0 * cubeSize);
-    float u      = ((x / (float)numCubesX) * cubeSize - offSet);
-    float w      = ((y / (float)numCubesY) * cubeSize - offSet);
-    float v      = ((z / (float)numCubesZ) * cubeSize - offSet);
+    float u = ((x * cubeDistance) - (cubeDistance * numCubesX / 2.0));
+    float w = ((y * cubeDistance) - (cubeDistance * numCubesY / 2.0));
+    float v = ((z * cubeDistance) - (cubeDistance * numCubesZ / 2.0));
 
     // write output vertex
     unsigned int i = x + numCubesY * (y + numCubesZ * z);
@@ -47,13 +48,13 @@ __global__ void calculate_update(float4 *pos, float4 *vel, float deltaTime, floa
     float  dy = deltaTime * vel[i].y;
     float  dz = deltaTime * vel[i].z;
     float4 a  = pos[i];
-    if ((a.x + dx > bigCubeRad + cubeSize) || (a.x + dx < -bigCubeRad)) {
+    if ((a.x + dx > bigCubeRad - cubeSize) || (a.x + dx < -bigCubeRad)) {
         vel[i].x = -vel[i].x;
     }
-    if ((a.y + dy > bigCubeRad + cubeSize) || (a.y + dy < -bigCubeRad)) {
+    if ((a.y + dy > bigCubeRad - cubeSize) || (a.y + dy < -bigCubeRad)) {
         vel[i].y = -vel[i].y;
     }
-    if ((a.z + dz > bigCubeRad + cubeSize) || (a.z + dz < -bigCubeRad)) {
+    if ((a.z + dz > bigCubeRad - cubeSize) || (a.z + dz < -bigCubeRad)) {
         vel[i].z = -vel[i].z;
     }
 
@@ -69,12 +70,28 @@ __global__ void calculate_collision(float4 *pos, float4 *vel, float deltaTime) {
     if (i < j) {
         float4 a = pos[i];
         float4 b = pos[j];
-        if (((a.x <= b.x + 1.0f) && (a.x + 1.0f >= b.x)) &&
-            ((a.y <= b.y + 1.0f) && (a.y + 1.0f >= b.y)) &&
-            ((a.z <= b.z + 1.0f) && (a.z + 1.0f >= b.z))) {
-            vel[i].x = -vel[i].x;
-            vel[i].y = -vel[i].y;
-            vel[i].z = -vel[i].z;
+        if (((a.x <= b.x + cubeSize) && (a.x + cubeSize >= b.x)) &&
+            ((a.y <= b.y + cubeSize) && (a.y + cubeSize >= b.y)) &&
+            ((a.z <= b.z + cubeSize) && (a.z + cubeSize >= b.z))) {
+            float  directionX = pos[j].x - pos[i].x;
+            float  directionY = pos[j].y - pos[i].y;
+            float  directionZ = pos[j].z - pos[i].z;
+            float  len        = sqrt(directionX * directionX + directionY * directionY + directionZ * directionZ);
+            float4 n          = make_float4(directionX / len, directionY / len, directionZ / len, 1.0f);
+
+            float4 rv = make_float4(vel[j].x - vel[i].x, vel[j].y - vel[i].y, vel[j].z - vel[i].z, 1.0f);
+            // // Calculate relative velocity in terms of the normal direction
+            float velAlongNormal = rv.x * n.x + rv.y * n.y + rv.z * n.z;
+            //
+            // // Do not resolve if velocities are separating
+            if (velAlongNormal > 0) return;
+
+            // Calculate impulse scalar
+            float k = (-(1 + e) * velAlongNormal) / invMass;
+            // Apply impulse
+            float4 impulse = make_float4(k * n.x, k * n.y, k * n.z, 1.0f);
+            vel[i] = make_float4(vel[i].x - impulse.x, vel[i].y - impulse.y, vel[i].z - impulse.z, 1.0f);
+            vel[j] = make_float4(vel[j].x + impulse.x, vel[j].y + impulse.y, vel[j].z + impulse.z, 1.0f);
         }
     }
 }
