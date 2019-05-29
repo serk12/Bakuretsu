@@ -35,7 +35,7 @@ __global__ void calculate_vel_and_pos(float4 *pos, float4 *vel) {
 
 
 void initCubesDataKernal(float4 *ptr_pos, float4 *ptr_vel) {
-    dim3 block(5, 5, 5);
+    dim3 block(10, 10, 10);
     dim3 grid(numCubesX / block.x, numCubesY / block.y, numCubesZ / block.z);
     calculate_vel_and_pos << < grid, block >> > (ptr_pos, ptr_vel);
 }
@@ -74,13 +74,15 @@ __global__ void calculate_collision(float4 *pos, float4 *vel, float deltaTime) {
         if (((a.x <= b.x + cubeSize) && (a.x + cubeSize >= b.x)) &&
             ((a.y <= b.y + cubeSize) && (a.y + cubeSize >= b.y)) &&
             ((a.z <= b.z + cubeSize) && (a.z + cubeSize >= b.z))) {
-            float  directionX = pos[j].x - pos[i].x;
-            float  directionY = pos[j].y - pos[i].y;
-            float  directionZ = pos[j].z - pos[i].z;
+            float  directionX = b.x - a.x;
+            float  directionY = b.y - a.y;
+            float  directionZ = b.z - a.z;
             float  len        = sqrt(directionX * directionX + directionY * directionY + directionZ * directionZ);
             float4 n          = make_float4(directionX / len, directionY / len, directionZ / len, 1.0f);
 
-            float4 rv = make_float4(vel[j].x - vel[i].x, vel[j].y - vel[i].y, vel[j].z - vel[i].z, 1.0f);
+            float4 a_v = vel[i];
+            float4 b_v = vel[j];
+            float4 rv  = make_float4(b_v.x - a_v.x, b_v.y - a_v.y, b_v.z - a_v.z, 1.0f);
             // // Calculate relative velocity in terms of the normal direction
             float velAlongNormal = rv.x * n.x + rv.y * n.y + rv.z * n.z;
             //
@@ -91,19 +93,19 @@ __global__ void calculate_collision(float4 *pos, float4 *vel, float deltaTime) {
             float k = (-(1 + e) * velAlongNormal) / invMass;
             // Apply impulse
             float4 impulse = make_float4(k * n.x, k * n.y, k * n.z, 1.0f);
-            vel[i] = make_float4(vel[i].x - impulse.x, vel[i].y - impulse.y, vel[i].z - impulse.z, 1.0f);
-            vel[j] = make_float4(vel[j].x + impulse.x, vel[j].y + impulse.y, vel[j].z + impulse.z, 1.0f);
+            vel[i] = make_float4(a_v.x - impulse.x, a_v.y - impulse.y, a_v.z - impulse.z, 1.0f);
+            vel[j] = make_float4(b_v.x + impulse.x, b_v.y + impulse.y, b_v.z + impulse.z, 1.0f);
         }
     }
 }
 
 
 void cubesUpdate(float4 *ptr_pos, float4 *ptr_vel, float bigCubeRad, float deltaTime) {
-    // unsigned int triangleNumberN = numCubes - 1;
-    // diagonal + 1 / 2 = diag^2+diag / (2*diag) [+1 for ceiling]
-    // unsigned int dimToScale = (triangleNumberN + 2) / 2;
     dim3 block(32, 32);
     dim3 grid(numCubes / block.x, numCubes / block.y);
     calculate_collision << < grid, block  >> > (ptr_pos, ptr_vel, deltaTime);
-    calculate_update << < numCubes / 64, 64 >> > (ptr_pos, ptr_vel, deltaTime, bigCubeRad / 2.0f);
+    // printf("%s\n", cudaGetErrorString(cudaGetLastError()));
+    unsigned int blockSize = 1000;
+    calculate_update << < numCubes / blockSize, blockSize >> > (ptr_pos, ptr_vel, deltaTime, bigCubeRad / 2.0f);
+    // printf("%s\n", cudaGetErrorString(cudaGetLastError()));
 }
