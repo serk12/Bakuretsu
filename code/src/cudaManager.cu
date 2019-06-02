@@ -44,19 +44,19 @@ void initCubesDataKernal(float4 *ptr_pos, float4 *ptr_vel) {
 
 __global__ void calculate_update(float4 *pos, float4 *vel, float deltaTime, float bigCubeRad) {
     unsigned int i = blockIdx.x * blockDim.x + threadIdx.x;
-
-    float  dx = deltaTime * vel[i].x;
-    float  dy = deltaTime * vel[i].y;
-    float  dz = deltaTime * vel[i].z;
-    float4 a  = pos[i];
+    float4 a       = pos[i]; __syncthreads();
+    float4 a_v     = vel[i];
+    float  dx      = deltaTime * a_v.x;
+    float  dy      = deltaTime * a_v.y;
+    float  dz      = deltaTime * a_v.z;
     if ((a.x + dx > bigCubeRad - cubeSize) || (a.x + dx < -bigCubeRad)) {
-        vel[i].x = -vel[i].x;
+        vel[i].x = -a_v.x;
     }
     if ((a.y + dy > bigCubeRad - cubeSize) || (a.y + dy < -bigCubeRad)) {
-        vel[i].y = -vel[i].y;
+        vel[i].y = -a_v.y;
     }
     if ((a.z + dz > bigCubeRad - cubeSize) || (a.z + dz < -bigCubeRad)) {
-        vel[i].z = -vel[i].z;
+        vel[i].z = -a_v.z;
     }
 
     float u = pos[i].x + deltaTime * vel[i].x;
@@ -69,7 +69,7 @@ __global__ void calculate_collision(float4 *pos, float4 *vel, float deltaTime) {
     unsigned int i = blockIdx.x * blockDim.x + threadIdx.x;
     unsigned int j = blockIdx.y * blockDim.y + threadIdx.y;
     if (i < j) {
-        float4 a = pos[i];
+        float4 a = pos[i]; __syncthreads();
         float4 b = pos[j];
         if (((a.x <= b.x + cubeSize) && (a.x + cubeSize >= b.x)) &&
             ((a.y <= b.y + cubeSize) && (a.y + cubeSize >= b.y)) &&
@@ -80,7 +80,7 @@ __global__ void calculate_collision(float4 *pos, float4 *vel, float deltaTime) {
             float  len        = sqrt(directionX * directionX + directionY * directionY + directionZ * directionZ);
             float4 n          = make_float4(directionX / len, directionY / len, directionZ / len, 1.0f);
 
-            float4 a_v = vel[i];
+            float4 a_v = vel[i]; __syncthreads();
             float4 b_v = vel[j];
             float4 rv  = make_float4(b_v.x - a_v.x, b_v.y - a_v.y, b_v.z - a_v.z, 1.0f);
             // // Calculate relative velocity in terms of the normal direction
